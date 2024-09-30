@@ -1,9 +1,15 @@
+from os import pidfd_open
+
 import cv2
+import os
 
 #OpenCV facial detection pre-trained model using Haar cascade
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 
 video_capture = cv2.VideoCapture(0)
+
+files_path = "faces"
+os.makedirs(files_path, exist_ok=True)
 face_id = 1
 
 while True:
@@ -20,8 +26,15 @@ while True:
         face_roi = gray[y:y + h, x:x + w]
         face_roi_resized = cv2.resize(face_roi, (300, 300))
 
-        face_filename = f'face_{face_id}.jpg'
-        cv2.imwrite(face_filename, face_roi)
+
+        with open(os.path.join(files_path, f'face_{face_id}.jpg'), 'w') as jpg:
+            cv2.imwrite(os.path.join(files_path, f'face_{face_id}.jpg'), face_roi)
+            if face_id != 50:
+                print(face_id)
+                face_id += 1
+
+    if face_id > 50:
+        break
 
     cv2.imshow('Video', frame)
 
