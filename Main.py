@@ -6,17 +6,15 @@ import os
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 
 video_capture = cv2.VideoCapture(0)
-
 faces_folder = "faces"
-
 faces_list = []
 
 for filename in os.listdir(faces_folder):
-    if filename.endswith('.jpg'):  # Adicione outros formatos se necessário
-        # Cria o caminho completo para o arquivo
+    if filename.endswith('.jpg'):
+        # Create the path for the file
         image_path = os.path.join(faces_folder, filename)
 
-        # Lê a imagem e adiciona à lista
+        # Read the image and add to list
         image = cv2.imread(image_path)
         if image is not None:
             faces_list.append(image)
@@ -29,12 +27,13 @@ if not faces_list:
 reference_gray = cv2.cvtColor(faces_list[0], cv2.COLOR_BGR2GRAY)
 
 dimensions = reference_gray.shape
-print("Dimensões da imagem de referência:", dimensions)
+print("Reference image dimensions:", dimensions)
+print("Press Q to leave")
 
 while True:
     ret, frame = video_capture.read()
 
-    #Converts the image to grayscale, necessary for facial detection with Haar in OpenCV
+    # Converts the image to grayscale, necessary for facial detection with Haar in OpenCV
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
     faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(35, 35))
@@ -57,9 +56,9 @@ while True:
 
             correlation = cv2.compareHist(hist_reference, hist_face, cv2.HISTCMP_CORREL)
 
-            if correlation > 0.7:  # Adjust if needed
+            if correlation > 0.8:  # Adjust if needed
                 cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
-                cv2.putText(frame, "Rosto reconhecido!", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+                cv2.putText(frame, "Face Recognized", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
 
     cv2.imshow('Video', frame)
