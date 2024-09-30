@@ -1,15 +1,18 @@
-from time import sleep
+from os.path import exists
+
 import cv2
 import os
+import shutil
 
 face_id = 0
-
+folder = "faces"
 def recordFace(faces_id):
     video_capture = cv2.VideoCapture(0)
     files_path = "faces"
     os.makedirs(files_path, exist_ok=True)
-    faces_idmax = faces_id + 10
+    faces_idmax = faces_id + 30
     face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+
     while True:
         ret, frame = video_capture.read()
 
@@ -22,16 +25,14 @@ def recordFace(faces_id):
             cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
             face_roi = gray[y:y + h, x:x + w]
-            face_roi_resized = cv2.resize(face_roi, (300, 300))
-
-
 
             if faces_id < faces_idmax + 1:
-                with open(os.path.join(files_path, f'face_{faces_id}.jpg'), 'w') as jpg:
+                with open(os.path.join(files_path, f'face_{faces_id}.jpg'), 'w'):
                     cv2.imwrite(os.path.join(files_path, f'face_{faces_id}.jpg'), face_roi)
                 print(faces_id)
                 faces_id += 1
             elif faces_id > faces_idmax:
+                print("Images recorded")
                 video_capture.release()
                 cv2.destroyAllWindows()
                 return faces_id
@@ -45,6 +46,17 @@ def recordFace(faces_id):
     video_capture.release()
     cv2.destroyAllWindows()
 
+if exists(folder):
+    shutil.rmtree(folder)
+os.mkdir(folder)
+print("Stay close to the camera and just move your head gently in the requested directions")
+input(print("Look at camera and press ENTER"))
+face_id = recordFace(face_id)
 input(print("Look right and press ENTER"))
 face_id = recordFace(face_id)
-
+input(print("Look left and press ENTER"))
+face_id = recordFace(face_id)
+input(print("Look up and press ENTER"))
+face_id = recordFace(face_id)
+input(print("Look down and press ENTER"))
+face_id = recordFace(face_id)
